@@ -1,0 +1,43 @@
+# Python & Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Testing & Caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Databases & Runtime Logs
+*.db
+*.sqlite3
+terminal.db
+*.log
+logs/
+
+# Secrets & Environment Variables
+.env
+.env.*
+!.env.example
+
+# Node / Frontend Build (For upcoming Phase 6)
+node_modules/
+dist/
+frontend/dist/
+.npm/
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Windows System Files
+Thumbs.db
+Desktop.ini
