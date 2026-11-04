@@ -94,3 +94,4 @@
 
 ## 📜 License
 Proprietary Quantitative Trading Infrastructure - Built for local-first desktop deployment.
+
