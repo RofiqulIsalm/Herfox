@@ -74,15 +74,17 @@
 
 ---
 
-### 💾 Phase 5: Database Persistence & 2-Way Telegram Mobile Command Center
+### 💾 Phase 5: Database Persistence & 2-Way Telegram Mobile Command Center [COMPLETED & 100% VERIFIED]
 - **Goal:** Store all trading and telemetry data locally and configure full 2-way interactive Telegram mobile alerts and remote MT5 commands (refer to `docs/TELEGRAM_INTELLIGENCE_AND_DISPATCH_SPEC.md`).
 - **Deliverables:**
-  - `backend/database/models.py` & `db_manager.py`: SQLite database (`terminal.db`) with tables: `trade_orders`, `confluence_telemetry`, `rsi_evolution_history`.
+  - `backend/database/models.py` & `db_manager.py`: SQLite WAL database (`terminal.db`) with tables: `trade_orders`, `confluence_telemetry`, `rsi_evolution_history`.
+  - `backend/alerts/chart_snapshotter.py`: Headless matplotlib dark-theme engine rendering high-res PNG charts with marked Entry, SL, TP1, TP2, SMC zone boxes, and Confluence HUD badge.
   - `backend/alerts/telegram_bot.py`: Full 2-Way Asynchronous Telegram Bot client:
     - *Outbound Alerts:* Grade A+ setups with attached PNG chart snapshots, TP1/TP2 hit notices, Auto Break-Even alerts, Hermes macro flashes, and session briefings.
-    - *Inbound Commands:* Interactive mobile remote responding to `/status`, `/positions`, `/news`, `/briefing`, `/pause`, `/resume`, and emergency `/closeall`.
-  - `backend/alerts/chart_snapshotter.py`: Generates high-res PNG chart screenshots with marked entry, SL, TP, and confluence reasoning.
-- **Empirical Verification:** Run `tests/test_persistence_and_alerts.py` to verify SQLite CRUD performance, dispatch a sample chart alert, and test inbound command responses.
+    - *Inbound Commands:* Interactive mobile remote responding to `/status`, `/positions`, `/news`, `/briefing`, `/pause`, `/resume`, and emergency `/closeall` -> `/confirm_kill`.
+    - *Security Whitelist:* Authorized Telegram numeric ID whitelist with automatic intrusion block.
+  - `backend/config/telegram_config.json`: Production configuration file.
+- **Empirical Verification:** Run `tests/test_persistence_and_alerts.py` - passed with exit code 0 (Verified SQLite CRUD & Break-Even update, 96 KB high-res chart PNG generation, outbound alert dispatch, inbound `/status`, `/pause`, `/closeall` emergency kill, and unauthorized access blocking).
 
 ---
 

@@ -1,0 +1,19 @@
+{
+  "enabled": false,
+  "bot_token": "YOUR_TELEGRAM_BOT_TOKEN_HERE",
+  "chat_id": "YOUR_TELEGRAM_CHAT_ID_HERE",
+  "whitelist_chat_ids": [
+    "YOUR_TELEGRAM_CHAT_ID_HERE"
+  ],
+  "polling_interval_seconds": 2.0,
+  "chart_snapshots_enabled": true,
+  "notifications": {
+    "signals_grade_a_plus": true,
+    "tp1_and_break_even": true,
+    "tp2_and_trailing": true,
+    "hermes_macro_flashes": true,
+    "red_folder_30m_warnings": true,
+    "session_briefings": true,
+    "daily_summary": true
+  }
+}

@@ -131,16 +131,23 @@ All 6 proposed features were formally approved:
   - [x] **DONE:** Implemented [backend/modules/pillar4_master/order_manager.py](file:///c:/Users/OS/Desktop/The%20Life/backend/modules/pillar4_master/order_manager.py) (3-tranche scaling: TP1 lock, auto Break-Even + 1 pip spread buffer, TP2 lock, runner).
   - [x] **DONE:** Implemented [backend/modules/pillar4_master/trailing_stop.py](file:///c:/Users/OS/Desktop/The%20Life/backend/modules/pillar4_master/trailing_stop.py) (adaptive ATR / swing pivot runner ratchet engine).
   - [x] **DONE:** Implemented & passed [tests/test_confluence_execution.py](file:///c:/Users/OS/Desktop/The%20Life/tests/test_confluence_execution.py) (Exit code 0).
+- [x] **DONE - PHASE 5 IMPLEMENTATION & VERIFICATION:**
+  - [x] **DONE:** Implemented [backend/database/models.py](file:///c:/Users/OS/Desktop/The%20Life/backend/database/models.py) and [backend/database/db_manager.py](file:///c:/Users/OS/Desktop/The%20Life/backend/database/db_manager.py) (`terminal.db` with `trade_orders`, `confluence_telemetry`, `rsi_evolution_history` tables).
+  - [x] **DONE:** Implemented [backend/alerts/chart_snapshotter.py](file:///c:/Users/OS/Desktop/The%20Life/backend/alerts/chart_snapshotter.py) (headless matplotlib dark-mode generator with entry, SL, TP1, TP2 lines, SMC zone boxes, and Confluence HUD badge).
+  - [x] **DONE:** Implemented [backend/alerts/telegram_bot.py](file:///c:/Users/OS/Desktop/The%20Life/backend/alerts/telegram_bot.py) (full 2-way bot client with outbound chart alerts, milestone notices, and inbound `/status`, `/positions`, `/news`, `/briefing`, `/pause`, `/resume`, `/closeall` commands).
+  - [x] **DONE:** Created [backend/config/telegram_config.json](file:///c:/Users/OS/Desktop/The%20Life/backend/config/telegram_config.json) (whitelist & notification preferences).
+  - [x] **DONE:** Implemented & passed [tests/test_persistence_and_alerts.py](file:///c:/Users/OS/Desktop/The%20Life/tests/test_persistence_and_alerts.py) with zero errors (Exit code 0).
 
 ---
 
-## 6. Next Milestone (Phase 5)
+## 6. Next Milestone (Phase 6)
 Triggered by the user saying **`"next phase"`** or **`"do it"`**:
-- **Phase 5: Database Persistence & 2-Way Telegram Mobile Command Center**:
-  1. `backend/database/models.py` & `db_manager.py`: SQLite database (`terminal.db`) with tables: `trade_orders`, `confluence_telemetry`, `rsi_evolution_history`.
-  2. `backend/alerts/chart_snapshotter.py`: Headless matplotlib chart renderer saving high-res PNG chart snapshots with marked entry, SL, TP, and confluence reasoning overlay.
-  3. `backend/alerts/telegram_bot.py`: Full 2-Way Asynchronous Telegram Bot client (outbound signal alerts with chart PNGs, milestone alerts, and inbound `/status`, `/positions`, `/news`, `/briefing`, `/pause`, `/resume`, `/closeall` commands).
-  4. `tests/test_persistence_and_alerts.py`: Complete SQLite CRUD & mock Telegram dispatch verification.
+- **Phase 6: Frontend Desktop Dashboard (TradingView Core)**:
+  1. `frontend/`: React 18 + Tailwind CSS + TradingView Lightweight Charts (v5.2.1).
+  2. Components: `ChartView.jsx`, `WatchlistBar.jsx`, `ConfluenceRadar.jsx`, `HermesDossier.jsx`, `ExecutionDeck.jsx`.
+  3. `backend/app.py`: FastAPI server streaming ticks and confluence scores over WebSockets.
+  4. `run_terminal.bat`: One-click Windows desktop launcher using Microsoft Edge WebView2.
+
 
 
 
