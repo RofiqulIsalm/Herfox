@@ -184,6 +184,8 @@ def get_candles(
     """Returns OHLCV candles formatted for TradingView Lightweight Charts."""
     clean_sym = symbol_mgr.normalize_symbol(symbol)
     df = market_feed.get_candles(clean_sym, timeframe=timeframe, count=count)
+    if df is not None and not df.empty and "time" in df.columns:
+        df = df.drop_duplicates(subset=["time"]).sort_values("time")
 
     candles = []
     for _, row in df.iterrows():
