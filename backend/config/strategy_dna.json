@@ -1,15 +1,19 @@
 {
   "system_version": "1.0.0",
-  "active_champion_id": "DNA-DEFAULT-M15-V1",
+  "active_champion_id": "DNA-XAUUSD-M15-G1-V09",
   "risk_management": {
     "default_risk_percent": 1.0,
     "max_daily_risk_percent": 2.0,
     "max_trades_per_day": 2,
-    "tranche_split": [0.333, 0.333, 0.334],
+    "tranche_split": [
+      0.333,
+      0.333,
+      0.334
+    ],
     "break_even_buffer_pips": 1.0,
     "atr_sl_multiplier": 1.4,
-    "tp1_rr_ratio": 1.0,
-    "tp2_rr_ratio": 2.5,
+    "tp1_rr_ratio": 1.1,
+    "tp2_rr_ratio": 2.48,
     "tp3_runner_enabled": true
   },
   "instruments": {
@@ -27,7 +31,7 @@
     },
     "XAUUSD": {
       "enabled": true,
-      "pip_size": 0.10,
+      "pip_size": 0.1,
       "max_spread_pips": 3.0,
       "contract_size": 100
     },
@@ -42,16 +46,17 @@
     "news_guard_blackout_minutes_before": 30,
     "news_guard_blackout_minutes_after": 30,
     "friday_close_hours_before_market_close": 1.0,
-    "dead_hours_gmt": ["21:00-23:00"]
+    "dead_hours_gmt": [
+      "21:00-23:00"
+    ]
   },
   "confluence_weights": {
-    "macro_news_weight": 0.20,
-    "smc_liquidity_weight": 0.30,
-    "classical_pattern_weight": 0.20,
-    "mtf_alignment_weight": 0.15,
-    "smt_divergence_weight": 0.15,
-    "grade_a_plus_threshold": 85,
+    "macro_news_weight": 0.132,
+    "smc_liquidity_weight": 0.373,
+    "classical_pattern_weight": 0.16,
+    "mtf_alignment_weight": 0.145,
+    "smt_divergence_weight": 0.189,
+    "grade_a_plus_threshold": 83.37,
     "grade_a_threshold": 75
   }
 }
-

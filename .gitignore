@@ -20,16 +20,15 @@ htmlcov/
 terminal.db
 *.log
 logs/
+backend/alerts/snapshots/*.png
 
 # Secrets & Environment Variables
 .env
 .env.*
 !.env.example
 
-# Node / Frontend Build (For upcoming Phase 6)
+# Node / Frontend Build
 node_modules/
-dist/
-frontend/dist/
 .npm/
 
 # IDE & Editor Settings

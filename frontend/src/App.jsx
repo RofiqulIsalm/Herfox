@@ -4,8 +4,10 @@ import WatchlistBar from './components/WatchlistBar';
 import ChartView from './components/ChartView';
 import ConfluenceRadar from './components/ConfluenceRadar';
 import ExecutionDeck from './components/ExecutionDeck';
+import EvolutionArena from './components/EvolutionArena';
 
 export default function App() {
+  const [activeView, setActiveView] = useState('terminal'); // 'terminal' or 'evolution'
   const [activeSymbol, setActiveSymbol] = useState('XAUUSD');
   const [timeframe, setTimeframe] = useState('M15');
 
@@ -129,39 +131,52 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#0B0E14] text-[#E6EDF3] overflow-hidden">
-      {/* Zone A: Top Header */}
-      <Header status={status} onOpenSettings={() => alert('Settings: Strategy DNA loaded from backend/config/strategy_dna.json')} />
-
-      {/* Main Work Area: Split into 3 columns (Zone B, C, D) */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Zone B: Left Watchlist */}
-        <WatchlistBar
-          watchlist={watchlist}
-          activeSymbol={activeSymbol}
-          onSelectSymbol={setActiveSymbol}
-        />
-
-        {/* Zone C: Center TradingView Interactive Chart */}
-        <ChartView
-          symbol={activeSymbol}
-          timeframe={timeframe}
-          onTimeframeChange={setTimeframe}
-          confluenceData={confluenceData}
-        />
-
-        {/* Zone D: Right Confluence Radar */}
-        <ConfluenceRadar confluenceData={confluenceData} />
-      </div>
-
-      {/* Zone E: Bottom Execution Control Deck */}
-      <ExecutionDeck
-        symbol={activeSymbol}
+      {/* Zone A: Top Header with Tab Switcher */}
+      <Header
+        activeView={activeView}
+        onSwitchView={setActiveView}
         status={status}
-        positions={positions}
-        onExecute={handleExecute}
-        onCloseAll={handleCloseAll}
-        onSendTelegramAlert={handleSendTelegram}
+        onOpenSettings={() => alert('Settings: Strategy DNA loaded from backend/config/strategy_dna.json')}
       />
+
+      {/* View Switcher: Terminal View vs. Evolution Arena */}
+      {activeView === 'evolution' ? (
+        <EvolutionArena onBackToTerminal={() => setActiveView('terminal')} />
+      ) : (
+        <>
+          {/* Main Work Area: Split into 3 columns (Zone B, C, D) */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Zone B: Left Watchlist */}
+            <WatchlistBar
+              watchlist={watchlist}
+              activeSymbol={activeSymbol}
+              onSelectSymbol={setActiveSymbol}
+            />
+
+            {/* Zone C: Center TradingView Interactive Chart */}
+            <ChartView
+              symbol={activeSymbol}
+              timeframe={timeframe}
+              onTimeframeChange={setTimeframe}
+              confluenceData={confluenceData}
+            />
+
+            {/* Zone D: Right Confluence Radar */}
+            <ConfluenceRadar confluenceData={confluenceData} />
+          </div>
+
+          {/* Zone E: Bottom Execution Control Deck */}
+          <ExecutionDeck
+            symbol={activeSymbol}
+            status={status}
+            positions={positions}
+            onExecute={handleExecute}
+            onCloseAll={handleCloseAll}
+            onSendTelegramAlert={handleSendTelegram}
+          />
+        </>
+      )}
     </div>
   );
 }
+

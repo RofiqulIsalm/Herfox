@@ -26,11 +26,19 @@ from backend.bridge.market_feed import MarketFeed
 from backend.bridge.symbol_manager import SymbolManager
 from backend.modules.layer0_macro import NewsGuard, HermesAgent
 from backend.modules.technical_analyzer import TechnicalAnalyzer
-from backend.modules.pillar4_master import ConfluenceEngine, OrderManager, AdaptiveTrailingStop, TradePackage
+from backend.modules.pillar4_master import (
+    ConfluenceEngine,
+    OrderManager,
+    AdaptiveTrailingStop,
+    TradePackage,
+    PropFirmSafetyShield,
+)
 from backend.database.db_manager import DatabaseManager
 from backend.database.models import TradeOrderModel, ConfluenceTelemetryModel
 from backend.alerts.telegram_bot import TelegramBotClient
 from backend.alerts.chart_snapshotter import ChartSnapshotter
+from backend.optimization.background_lab import BackgroundLabWorker
+from backend.backtest.bar_replay import BarReplayEngine
 
 app = FastAPI(
     title="The Life - Forex Confluence Terminal API",
@@ -57,6 +65,7 @@ news_guard = NewsGuard()
 hermes_agent = HermesAgent()
 technical_analyzer = TechnicalAnalyzer()
 confluence_engine = ConfluenceEngine()
+safety_shield = PropFirmSafetyShield()
 order_manager = OrderManager(symbol_manager=symbol_mgr)
 trailing_stop = AdaptiveTrailingStop()
 db_manager = DatabaseManager()
@@ -67,6 +76,10 @@ telegram_bot = TelegramBotClient(
     mt5_client=mt5_client,
 )
 chart_snapshotter = ChartSnapshotter()
+background_lab = BackgroundLabWorker(
+    db_manager=db_manager,
+    telegram_bot=telegram_bot,
+)
 
 # In-memory active trade packages registry
 active_packages: Dict[str, TradePackage] = {}
@@ -89,6 +102,10 @@ class TelegramAlertRequest(BaseModel):
     symbol: str
     direction: str
     include_chart: bool = True
+
+
+class PromoteRequest(BaseModel):
+    variant_id: str
 
 
 # ==========================================================
@@ -377,6 +394,78 @@ def send_telegram_signal_alert(req: TelegramAlertRequest):
 
     sent = telegram_bot.send_grade_a_signal(setup_data, chart_png_path=chart_png)
     return {"status": "DISPATCHED", "sent": sent, "chart_path": chart_png}
+
+
+# ==========================================================
+# Evolution Arena & Multi-Line Fan Endpoints
+# ==========================================================
+
+@app.get("/api/evolution/tournament")
+def get_tournament_leaderboard():
+    """Returns tournament leaderboard with win rates, drawdowns, and champion status."""
+    leaderboard = background_lab.get_leaderboard()
+    return {
+        "active_champion_id": background_lab.active_champion_id,
+        "generation": background_lab.current_generation - 1,
+        "leaderboard": leaderboard,
+    }
+
+
+@app.get("/api/evolution/fan-curves")
+def get_evolution_fan_curves():
+    """Returns multi-line equity fan curves for background tournament visualization."""
+    return background_lab.get_fan_curves()
+
+
+@app.post("/api/evolution/mutate")
+def trigger_generation_mutation(asset: str = Query("XAUUSD"), count: int = Query(15)):
+    """Triggers an immediate batch of strategy mutations in the background lab."""
+    background_lab.run_tournament_generation(asset=asset, n_variants=count, n_trades=80)
+    return {
+        "status": "GENERATION_SIMULATED",
+        "generation": background_lab.current_generation - 1,
+        "leaderboard": background_lab.get_leaderboard(),
+    }
+
+
+@app.post("/api/evolution/promote")
+def promote_challenger_to_champion(req: PromoteRequest):
+    """Promotes a top-performing challenger to active champion."""
+    result = background_lab.promote_challenger(req.variant_id)
+    return result
+
+
+class ReplayRequest(BaseModel):
+    symbol: str = "XAUUSD"
+    initial_balance: float = 10000.0
+    risk_percent: float = 1.0
+    days: int = 4
+
+
+@app.get("/api/safety/status")
+def get_safety_shield_status():
+    """Returns Prop Firm Safety Shield metrics and active capital protection locks."""
+    daily_stats = db_manager.get_daily_stats()
+    status = safety_shield.evaluate_safety(
+        current_equity=10000.0 + daily_stats["daily_pnl_usd"],
+        starting_day_equity=10000.0,
+        initial_balance=10000.0,
+        trades_taken_today=daily_stats["trades_count"],
+    )
+    return status
+
+
+@app.post("/api/replay/run")
+def run_bar_replay_simulation(req: ReplayRequest):
+    """Runs high-fidelity historical bar-replay simulation."""
+    engine = BarReplayEngine(
+        symbol=req.symbol,
+        initial_balance=req.initial_balance,
+        risk_percent=req.risk_percent,
+        db_manager=db_manager,
+    )
+    results = engine.run_all()
+    return results
 
 
 # ==========================================================

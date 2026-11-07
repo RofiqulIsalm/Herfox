@@ -32,3 +32,4 @@ echo Terminal Running! Press any key or close this window to stop the server.
 echo =====================================================================
 pause
 taskkill /f /im python.exe >nul 2>&1
+

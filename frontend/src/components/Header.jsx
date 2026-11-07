@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Activity, Send, Settings, Radio } from 'lucide-react';
 
-export default function Header({ status, onOpenSettings }) {
+export default function Header({ activeView, onSwitchView, status, onOpenSettings }) {
   const [gmtTime, setGmtTime] = useState('');
 
   useEffect(() => {
@@ -16,19 +16,37 @@ export default function Header({ status, onOpenSettings }) {
 
   return (
     <header className="h-12 bg-[#151921] border-b border-[#222834] px-4 flex items-center justify-between select-none">
-      {/* Brand & Connection State */}
-      <div className="flex items-center space-x-3">
+      {/* Brand & Navigation Tabs */}
+      <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-[#00E676] animate-pulse" />
           <span className="font-bold text-sm tracking-wide text-white">THE LIFE</span>
         </div>
-        <span className="text-xs px-2 py-0.5 rounded bg-[#222834] text-[#00F0FF] font-mono font-medium">
-          CONFLUENCE TERMINAL v1.0
-        </span>
 
-        <div className="hidden md:flex items-center space-x-2 pl-3 border-l border-[#222834] text-xs text-gray-400">
-          <span>Broker:</span>
-          <span className="text-gray-200 font-mono font-semibold">FTMO • MT5 #827192</span>
+        {/* View Switcher Tabs */}
+        <div className="flex items-center space-x-1 pl-3 border-l border-[#222834]">
+          <button
+            onClick={() => onSwitchView('terminal')}
+            className={`px-3 py-1 rounded text-xs font-mono font-bold transition ${
+              activeView === 'terminal'
+                ? 'bg-[#00F0FF] text-black shadow-md shadow-[#00F0FF]/20'
+                : 'text-gray-400 hover:text-white hover:bg-[#222834]'
+            }`}
+          >
+            📈 TERMINAL
+          </button>
+
+          <button
+            onClick={() => onSwitchView('evolution')}
+            className={`px-3 py-1 rounded text-xs font-mono font-bold transition flex items-center space-x-1.5 ${
+              activeView === 'evolution'
+                ? 'bg-[#00F0FF] text-black shadow-md shadow-[#00F0FF]/20'
+                : 'text-gray-400 hover:text-[#00F0FF] hover:bg-[#222834]'
+            }`}
+          >
+            <span>🧬 EVOLUTION ARENA</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00E676] animate-ping" />
+          </button>
         </div>
       </div>
 
@@ -64,3 +82,4 @@ export default function Header({ status, onOpenSettings }) {
     </header>
   );
 }
+

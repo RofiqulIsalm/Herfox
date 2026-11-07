@@ -205,3 +205,4 @@ export default function ChartView({ symbol, timeframe, onTimeframeChange, conflu
     </div>
   );
 }
+

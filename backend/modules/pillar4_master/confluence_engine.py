@@ -112,6 +112,22 @@ class ConfluenceEngine:
                 f"DAILY_CAP_VETO: Daily execution limit of {max_daily_trades} trades has been reached ({trades_today} taken)."
             )
 
+        # Check 3b: Prop Firm Daily Drawdown VETO
+        daily_dd_pct = daily_stats.get("daily_drawdown_pct", 0.0)
+        max_daily_dd = self.config.get("max_daily_drawdown_pct", 4.0)
+        if daily_dd_pct >= max_daily_dd:
+            vetos.append(
+                f"DRAWDOWN_VETO: Daily drawdown ({daily_dd_pct:.2f}%) has breached Prop Firm limit ({max_daily_dd:.1f}%)."
+            )
+
+        # Check 3c: Friday Weekend Gap Guard VETO
+        trade_dt = daily_stats.get("current_dt")
+        if trade_dt and hasattr(trade_dt, "weekday"):
+            if trade_dt.weekday() == 4 and trade_dt.hour >= 20:
+                vetos.append(
+                    f"FRIDAY_WEEKEND_VETO: Market approaches weekend close ({trade_dt.strftime('%H:%M')} GMT). Entries frozen."
+                )
+
         # Check 4: MTF Counter-Trend VETO
         macro_trend = mtf_data.get("macro_trend", "NEUTRAL").upper()
         if direction == "BUY" and "BEARISH" in macro_trend:
@@ -166,7 +182,7 @@ class ConfluenceEngine:
         pattern_score = 0.0
         candlestick = pattern_data.get("candlestick_trigger", {})
         c_dir = candlestick.get("direction", "").upper()
-        if (direction == "BUY" and c_dir == "BULLISH") or (direction == "SELL" and c_dir == "BEARISH"):
+        if (direction == "BUY" and c_dir in ("BULLISH", "BUY")) or (direction == "SELL" and c_dir in ("BEARISH", "SELL")):
             pattern_score += 12.0
             reasons.append(f"Trigger Candlestick Confirmation: {candlestick.get('pattern')}")
 

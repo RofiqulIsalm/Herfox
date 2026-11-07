@@ -85,3 +85,4 @@ export default function WatchlistBar({ watchlist, activeSymbol, onSelectSymbol }
     </div>
   );
 }
+
