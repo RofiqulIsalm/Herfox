@@ -190,6 +190,7 @@ export default function App() {
                 timeframe={timeframe}
                 onTimeframeChange={setTimeframe}
                 confluenceData={confluenceData}
+                positions={positions}
               />
 
               {/* Zone D: Right Confluence Radar */}

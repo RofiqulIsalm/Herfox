@@ -3,10 +3,11 @@ import { TrendingUp, TrendingDown, AlertTriangle, Clock } from 'lucide-react';
 
 export default function WatchlistBar({ watchlist, activeSymbol, onSelectSymbol }) {
   const defaultList = [
-    { symbol: 'XAUUSD', bid: 2742.80, ask: 2743.00, change_24h_percent: 0.45, spread_pips: 1.8, max_spread_pips: 3.0 },
-    { symbol: 'EURUSD', bid: 1.08450, ask: 1.08465, change_24h_percent: -0.12, spread_pips: 1.5, max_spread_pips: 1.5 },
-    { symbol: 'GBPUSD', bid: 1.29650, ask: 1.29670, change_24h_percent: 0.22, spread_pips: 2.0, max_spread_pips: 2.0 },
-    { symbol: 'XAGUSD', bid: 32.850, ask: 32.875, change_24h_percent: 1.10, spread_pips: 2.5, max_spread_pips: 4.0 },
+    { symbol: 'XAUUSD', bid: 4069.69, ask: 4069.87, change_24h_percent: -0.45, spread_pips: 1.8, max_spread_pips: 3.0 },
+    { symbol: 'BTCUSD', bid: 75868.00, ask: 75873.00, change_24h_percent: 1.25, spread_pips: 5.0, max_spread_pips: 25.0 },
+    { symbol: 'EURUSD', bid: 1.08740, ask: 1.08755, change_24h_percent: -0.12, spread_pips: 1.5, max_spread_pips: 1.5 },
+    { symbol: 'GBPUSD', bid: 1.29870, ask: 1.29890, change_24h_percent: 0.22, spread_pips: 2.0, max_spread_pips: 2.0 },
+    { symbol: 'XAGUSD', bid: 32.740, ask: 32.765, change_24h_percent: -0.33, spread_pips: 2.5, max_spread_pips: 4.0 },
   ];
 
   const items = (watchlist && watchlist.length > 0) ? watchlist : defaultList;
@@ -24,6 +25,7 @@ export default function WatchlistBar({ watchlist, activeSymbol, onSelectSymbol }
         {items.map((item) => {
           const isActive = item.symbol === activeSymbol;
           const isUp = item.change_24h_percent >= 0;
+          const isFx = item.symbol.includes('USD') && !item.symbol.includes('XAU') && !item.symbol.includes('XAG') && !item.symbol.includes('BTC');
 
           return (
             <div
@@ -48,7 +50,9 @@ export default function WatchlistBar({ watchlist, activeSymbol, onSelectSymbol }
               </div>
 
               <div className="flex items-baseline justify-between mt-1 text-xs font-mono">
-                <span className="text-gray-300 font-semibold">{item.bid?.toFixed(item.symbol.includes('USD') && !item.symbol.includes('XAU') && !item.symbol.includes('XAG') ? 5 : 2)}</span>
+                <span className="text-gray-300 font-semibold">
+                  {typeof item.bid === 'number' ? item.bid.toFixed(isFx ? 5 : 2) : item.bid}
+                </span>
                 <span className="text-gray-500 text-[11px]">
                   Spr: <span className={item.spread_veto ? 'text-[#FF3B30] font-bold' : 'text-gray-300'}>{item.spread_pips} p</span>
                 </span>
@@ -85,4 +89,3 @@ export default function WatchlistBar({ watchlist, activeSymbol, onSelectSymbol }
     </div>
   );
 }
-

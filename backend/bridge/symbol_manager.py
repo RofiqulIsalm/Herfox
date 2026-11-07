@@ -47,6 +47,15 @@ class SymbolManager:
             "max_lot": 50.0,
             "lot_step": 0.01,
         },
+        "BTCUSD": {
+            "pip_size": 1.0,  # $1.00 move
+            "contract_size": 1,  # 1 Bitcoin per standard lot
+            "pip_value_per_lot": 1.0,  # $1.00 per $1.00 move
+            "digits": 2,
+            "min_lot": 0.01,
+            "max_lot": 50.0,
+            "lot_step": 0.01,
+        },
     }
 
     def __init__(self, broker_symbols: Dict[str, Any] = None):

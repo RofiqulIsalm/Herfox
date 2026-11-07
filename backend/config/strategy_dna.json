@@ -1,6 +1,6 @@
 {
   "system_version": "1.0.0",
-  "active_champion_id": "DNA-XAUUSD-M15-G1-V15",
+  "active_champion_id": "DNA-XAUUSD-M15-G14-V12",
   "risk_management": {
     "default_risk_percent": 1.0,
     "max_daily_risk_percent": 2.0,
@@ -11,7 +11,7 @@
       0.334
     ],
     "break_even_buffer_pips": 1.0,
-    "atr_sl_multiplier": 1.41,
+    "atr_sl_multiplier": 1.53,
     "tp1_rr_ratio": 1.1,
     "tp2_rr_ratio": 2.48,
     "tp3_runner_enabled": true
@@ -40,6 +40,12 @@
       "pip_size": 0.01,
       "max_spread_pips": 4.0,
       "contract_size": 5000
+    },
+    "BTCUSD": {
+      "enabled": true,
+      "pip_size": 1.0,
+      "max_spread_pips": 25.0,
+      "contract_size": 1
     }
   },
   "execution_guards": {
@@ -51,12 +57,12 @@
     ]
   },
   "confluence_weights": {
-    "macro_news_weight": 0.132,
-    "smc_liquidity_weight": 0.373,
-    "classical_pattern_weight": 0.16,
-    "mtf_alignment_weight": 0.145,
-    "smt_divergence_weight": 0.189,
-    "grade_a_plus_threshold": 83.37,
+    "macro_news_weight": 0.101,
+    "smc_liquidity_weight": 0.404,
+    "classical_pattern_weight": 0.184,
+    "mtf_alignment_weight": 0.142,
+    "smt_divergence_weight": 0.169,
+    "grade_a_plus_threshold": 85.49,
     "grade_a_threshold": 75
   }
 }

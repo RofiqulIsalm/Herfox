@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createChart, ColorType, CandlestickSeries } from 'lightweight-charts';
 import { Maximize2, Layers } from 'lucide-react';
 
-export default function ChartView({ symbol, timeframe, onTimeframeChange, confluenceData }) {
+export default function ChartView({ symbol, timeframe, onTimeframeChange, confluenceData, positions }) {
   const chartContainerRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const candlestickSeriesRef = useRef(null);
@@ -96,9 +96,9 @@ export default function ChartView({ symbol, timeframe, onTimeframeChange, conflu
       });
   }, [symbol, timeframe]);
 
-  // Update Price Lines (Entry, SL, TP1, TP2) based on Confluence Data
+  // Update Price Lines (Entry, SL, TP1, TP2) ONLY when an active trade is open or Grade A+ setup is approved
   useEffect(() => {
-    if (!candlestickSeriesRef.current || !confluenceData) return;
+    if (!candlestickSeriesRef.current) return;
 
     // Clear old price lines
     priceLinesRef.current.forEach((line) => {
@@ -108,60 +108,88 @@ export default function ChartView({ symbol, timeframe, onTimeframeChange, conflu
     });
     priceLinesRef.current = [];
 
-    const conf = confluenceData.confluence || {};
-    const entry = conf.entry_price;
-    const sl = conf.sl_price;
-    if (entry && sl) {
-      const r = Math.abs(entry - sl);
+    // 1. Check for Active Open Position first (Fixed price levels, never jumps)
+    const openTrades = positions?.open_positions || [];
+    const activeTrade = openTrades.find((p) => p.symbol === symbol && p.status === 'ACTIVE');
+
+    let entry = null;
+    let sl = null;
+    let tp1 = null;
+    let tp2 = null;
+    let titlePrefix = '';
+
+    if (activeTrade) {
+      entry = activeTrade.entry_price;
+      sl = activeTrade.sl_price;
+      tp1 = activeTrade.tp1_price;
+      tp2 = activeTrade.tp2_price;
+      titlePrefix = 'LIVE ';
+    } else if (confluenceData?.confluence?.is_approved && confluenceData?.confluence?.grade === 'GRADE_A_PLUS') {
+      // 2. Only show setup lines if Grade A+ is APPROVED by Arbiter
+      const conf = confluenceData.confluence;
+      entry = conf.entry_price;
+      sl = conf.sl_price;
       const isBuy = conf.direction === 'BUY';
-      const tp1 = isBuy ? entry + r : entry - r;
-      const tp2 = isBuy ? entry + r * 2.5 : entry - r * 2.5;
+      const r = Math.abs(entry - sl);
+      tp1 = isBuy ? entry + r : entry - r;
+      tp2 = isBuy ? entry + r * 2.5 : entry - r * 2.5;
+      titlePrefix = 'PENDING ';
+    }
 
-      // 1. Entry Line
-      const entryLine = candlestickSeriesRef.current.createPriceLine({
-        price: entry,
-        color: '#00F0FF',
-        lineWidth: 1.5,
-        lineStyle: 2,
-        axisLabelVisible: true,
-        title: `ENTRY: ${entry.toFixed(2)}`,
-      });
-      priceLinesRef.current.push(entryLine);
+    // If neither active trade nor approved Grade A+ setup, keep chart completely clean (ZERO JUMPING LINES)
+    if (!entry || !sl) return;
 
-      // 2. Stop Loss Line
-      const slLine = candlestickSeriesRef.current.createPriceLine({
-        price: sl,
-        color: '#FF3B30',
-        lineWidth: 1.5,
-        lineStyle: 2,
-        axisLabelVisible: true,
-        title: `SL: ${sl.toFixed(2)}`,
-      });
-      priceLinesRef.current.push(slLine);
+    const isFx = symbol.includes('USD') && !symbol.includes('XAU') && !symbol.includes('XAG') && !symbol.includes('BTC');
+    const decimals = isFx ? 5 : 2;
 
-      // 3. Take Profit 1 Line
+    // 1. Entry Line
+    const entryLine = candlestickSeriesRef.current.createPriceLine({
+      price: entry,
+      color: '#00F0FF',
+      lineWidth: 1.5,
+      lineStyle: 2,
+      axisLabelVisible: true,
+      title: `${titlePrefix}ENTRY: ${entry.toFixed(decimals)}`,
+    });
+    priceLinesRef.current.push(entryLine);
+
+    // 2. Stop Loss Line
+    const slLine = candlestickSeriesRef.current.createPriceLine({
+      price: sl,
+      color: '#FF3B30',
+      lineWidth: 1.5,
+      lineStyle: 2,
+      axisLabelVisible: true,
+      title: `${titlePrefix}SL: ${sl.toFixed(decimals)}`,
+    });
+    priceLinesRef.current.push(slLine);
+
+    // 3. Take Profit 1 Line
+    if (tp1) {
       const tp1Line = candlestickSeriesRef.current.createPriceLine({
         price: tp1,
         color: '#00E676',
         lineWidth: 1.5,
         lineStyle: 2,
         axisLabelVisible: true,
-        title: `TP1: ${tp1.toFixed(2)} (BE)`,
+        title: `${titlePrefix}TP1: ${tp1.toFixed(decimals)}`,
       });
       priceLinesRef.current.push(tp1Line);
+    }
 
-      // 4. Take Profit 2 Line
+    // 4. Take Profit 2 Line
+    if (tp2) {
       const tp2Line = candlestickSeriesRef.current.createPriceLine({
         price: tp2,
         color: '#00C853',
         lineWidth: 1.5,
         lineStyle: 3,
         axisLabelVisible: true,
-        title: `TP2: ${tp2.toFixed(2)}`,
+        title: `${titlePrefix}TP2: ${tp2.toFixed(decimals)}`,
       });
       priceLinesRef.current.push(tp2Line);
     }
-  }, [confluenceData]);
+  }, [confluenceData, positions, symbol]);
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#0B0E14] relative">

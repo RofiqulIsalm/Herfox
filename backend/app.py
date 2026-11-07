@@ -138,7 +138,7 @@ def get_status():
 @app.get("/api/watchlist")
 def get_watchlist():
     """Returns live prices, spreads, and 24h percentage changes for monitored instruments."""
-    symbols = ["XAUUSD", "EURUSD", "GBPUSD", "XAGUSD"]
+    symbols = ["XAUUSD", "BTCUSD", "EURUSD", "GBPUSD", "XAGUSD"]
     data = []
 
     for sym in symbols:
@@ -154,8 +154,12 @@ def get_watchlist():
         chg_pct = round(((close - open_price) / open_price) * 100.0, 2)
 
         # Spread estimation
-        spread_pips = 1.5 if sym == "EURUSD" else (2.0 if sym == "GBPUSD" else (1.8 if sym == "XAUUSD" else 2.5))
-        max_spread = confluence_engine.config["max_spread_pips"].get(sym, 3.0)
+        if sym == "BTCUSD":
+            spread_pips = 5.0
+            max_spread = 25.0
+        else:
+            spread_pips = 1.5 if sym == "EURUSD" else (2.0 if sym == "GBPUSD" else (1.8 if sym == "XAUUSD" else 2.5))
+            max_spread = confluence_engine.config["max_spread_pips"].get(sym, 3.0)
 
         # Red folder status for this symbol
         news_check = news_guard.check_veto(sym)
@@ -482,7 +486,7 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             # Poll latest data every 1 second
             daily_stats = db_manager.get_daily_stats()
-            symbols = ["XAUUSD", "EURUSD", "GBPUSD", "XAGUSD"]
+            symbols = ["XAUUSD", "BTCUSD", "EURUSD", "GBPUSD", "XAGUSD"]
             ticks = {}
 
             for s in symbols:
