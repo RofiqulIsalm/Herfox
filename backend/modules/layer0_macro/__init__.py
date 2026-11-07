@@ -5,4 +5,7 @@ from .news_guard import NewsGuard
 from .rss_fetcher import RSSFetcher
 from .hermes_agent import HermesMacroAgent
 
-__all__ = ["NewsGuard", "RSSFetcher", "HermesMacroAgent"]
+# Alias for convenience
+HermesAgent = HermesMacroAgent
+
+__all__ = ["NewsGuard", "RSSFetcher", "HermesMacroAgent", "HermesAgent"]

@@ -377,3 +377,4 @@ class TelegramBotClient:
                 "• `/resume` - Resume signal generation\n"
                 "• `/closeall` - Emergency position flatten"
             )
+

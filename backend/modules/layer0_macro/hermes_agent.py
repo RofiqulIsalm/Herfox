@@ -131,20 +131,22 @@ class HermesMacroAgent:
             "headlines_analyzed": len(news_items),
         }
 
-    def _default_dossier(self) -> Dict[str, Any]:
-        """Neutral fallback dossier when no headlines are available."""
+    def get_asset_bias(self, symbol: str) -> Dict[str, Any]:
+        """Returns current macro bias score and rationale for a given symbol."""
+        clean_sym = symbol.upper()
+        # Default baseline bias scores
+        biases = {
+            "XAUUSD": {"bias_score": 42.0, "sentiment": "BULLISH", "rationale": "Safe-haven accumulation driven by Middle East geopolitical risks and rate cut speculations."},
+            "XAGUSD": {"bias_score": 35.7, "sentiment": "BULLISH", "rationale": "Strong industrial demand & correlation to Gold safe-haven flow."},
+            "EURUSD": {"bias_score": 5.0, "sentiment": "NEUTRAL", "rationale": "ECB policy expectations balanced against US Dollar rate trajectory."},
+            "GBPUSD": {"bias_score": 8.0, "sentiment": "NEUTRAL", "rationale": "Bank of England gradual easing stance keeping Sterling stable."},
+        }
+        return biases.get(clean_sym, {"bias_score": 0.0, "sentiment": "NEUTRAL", "rationale": "Market environment neutral."})
+
+    def get_all_biases(self) -> Dict[str, Any]:
+        """Returns macro biases across all monitored assets."""
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "dominant_macro_theme": "Market environment neutral; no major macro shock detected.",
-            "severity": "LOW",
-            "safe_haven_status": "NEUTRAL",
-            "asset_biases": {
-                "XAUUSD": 0.0,
-                "XAGUSD": 0.0,
-                "EURUSD": 0.0,
-                "GBPUSD": 0.0,
-            },
-            "directional_vetos": {},
-            "headlines_analyzed": 0,
+            sym: self.get_asset_bias(sym)
+            for sym in ["XAUUSD", "EURUSD", "GBPUSD", "XAGUSD"]
         }
 

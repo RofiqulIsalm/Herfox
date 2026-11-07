@@ -98,3 +98,7 @@ class MarketFeed:
 
         return pd.DataFrame(candles)
 
+    def get_candles(self, symbol: str, timeframe: str = "M15", count: int = 100) -> pd.DataFrame:
+        """Alias for get_historical_candles."""
+        return self.get_historical_candles(symbol, timeframe, count)
+

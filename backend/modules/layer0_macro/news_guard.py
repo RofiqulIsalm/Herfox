@@ -135,3 +135,17 @@ class NewsGuard:
                 "seconds_to_event": next_event["seconds_to_event"],
             } if next_event else None,
         }
+
+    def check_veto(self, symbol: Optional[str] = None, now_dt: Optional[datetime] = None) -> Dict[str, Any]:
+        """Checks if news veto is active for symbol and returns countdown minutes."""
+        status = self.check_veto_status(now_dt)
+        veto_active = status.get("veto_active", False)
+        next_ev = status.get("next_event")
+        minutes_to_next = round(next_ev["seconds_to_event"] / 60.0, 1) if next_ev and "seconds_to_event" in next_ev else 999.0
+
+        return {
+            "news_veto": veto_active,
+            "minutes_to_next": minutes_to_next,
+            "next_event": next_ev,
+            "status_details": status,
+        }
