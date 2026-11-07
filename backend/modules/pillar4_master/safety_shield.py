@@ -157,3 +157,4 @@ class PropFirmSafetyShield:
             "max_total_drawdown_pct": self.max_total_drawdown_pct,
             "timestamp": dt.isoformat(),
         }
+

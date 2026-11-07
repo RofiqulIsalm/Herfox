@@ -273,3 +273,4 @@ class BackgroundLabWorker:
             "max_drawdown": max_dd,
             "message": f"Strategy {variant_id} successfully promoted to active champion.",
         }
+

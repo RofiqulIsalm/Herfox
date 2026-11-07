@@ -1,10 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import Header from './components/Header';
 import WatchlistBar from './components/WatchlistBar';
 import ChartView from './components/ChartView';
 import ConfluenceRadar from './components/ConfluenceRadar';
 import ExecutionDeck from './components/ExecutionDeck';
 import EvolutionArena from './components/EvolutionArena';
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-[#0B0E14] text-[#E6EDF3]">
+          <h2 className="text-sm font-bold text-[#FF3B30] mb-2 font-mono">⚠️ View Rendering Interrupted</h2>
+          <p className="text-xs text-gray-400 font-mono mb-4">{this.state.error?.message || 'Unexpected error'}</p>
+          <button
+            onClick={() => this.setState({ hasError: false })}
+            className="px-4 py-1.5 rounded bg-[#00F0FF] text-black font-bold text-xs font-mono"
+          >
+            RELOAD VIEW
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function App() {
   const [activeView, setActiveView] = useState('terminal'); // 'terminal' or 'evolution'
@@ -140,42 +170,44 @@ export default function App() {
       />
 
       {/* View Switcher: Terminal View vs. Evolution Arena */}
-      {activeView === 'evolution' ? (
-        <EvolutionArena onBackToTerminal={() => setActiveView('terminal')} />
-      ) : (
-        <>
-          {/* Main Work Area: Split into 3 columns (Zone B, C, D) */}
-          <div className="flex-1 flex overflow-hidden">
-            {/* Zone B: Left Watchlist */}
-            <WatchlistBar
-              watchlist={watchlist}
-              activeSymbol={activeSymbol}
-              onSelectSymbol={setActiveSymbol}
-            />
+      <ErrorBoundary>
+        {activeView === 'evolution' ? (
+          <EvolutionArena onBackToTerminal={() => setActiveView('terminal')} />
+        ) : (
+          <>
+            {/* Main Work Area: Split into 3 columns (Zone B, C, D) */}
+            <div className="flex-1 flex overflow-hidden">
+              {/* Zone B: Left Watchlist */}
+              <WatchlistBar
+                watchlist={watchlist}
+                activeSymbol={activeSymbol}
+                onSelectSymbol={setActiveSymbol}
+              />
 
-            {/* Zone C: Center TradingView Interactive Chart */}
-            <ChartView
+              {/* Zone C: Center TradingView Interactive Chart */}
+              <ChartView
+                symbol={activeSymbol}
+                timeframe={timeframe}
+                onTimeframeChange={setTimeframe}
+                confluenceData={confluenceData}
+              />
+
+              {/* Zone D: Right Confluence Radar */}
+              <ConfluenceRadar confluenceData={confluenceData} />
+            </div>
+
+            {/* Zone E: Bottom Execution Control Deck */}
+            <ExecutionDeck
               symbol={activeSymbol}
-              timeframe={timeframe}
-              onTimeframeChange={setTimeframe}
-              confluenceData={confluenceData}
+              status={status}
+              positions={positions}
+              onExecute={handleExecute}
+              onCloseAll={handleCloseAll}
+              onSendTelegramAlert={handleSendTelegram}
             />
-
-            {/* Zone D: Right Confluence Radar */}
-            <ConfluenceRadar confluenceData={confluenceData} />
-          </div>
-
-          {/* Zone E: Bottom Execution Control Deck */}
-          <ExecutionDeck
-            symbol={activeSymbol}
-            status={status}
-            positions={positions}
-            onExecute={handleExecute}
-            onCloseAll={handleCloseAll}
-            onSendTelegramAlert={handleSendTelegram}
-          />
-        </>
-      )}
+          </>
+        )}
+      </ErrorBoundary>
     </div>
   );
 }

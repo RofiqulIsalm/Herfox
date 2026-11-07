@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, ColorType } from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries } from 'lightweight-charts';
 import { Maximize2, Layers } from 'lucide-react';
 
 export default function ChartView({ symbol, timeframe, onTimeframeChange, confluenceData }) {
@@ -17,59 +17,65 @@ export default function ChartView({ symbol, timeframe, onTimeframeChange, conflu
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Create chart instance
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: '#0B0E14' },
-        textColor: '#C9D1D9',
-        fontSize: 11,
-        fontFamily: 'JetBrains Mono, monospace',
-      },
-      grid: {
-        vertLines: { color: '#181E27', style: 1 },
-        horzLines: { color: '#181E27', style: 1 },
-      },
-      crosshair: {
-        mode: 1,
-        vertLine: { color: '#00F0FF', width: 1, style: 2 },
-        horzLine: { color: '#00F0FF', width: 1, style: 2 },
-      },
-      rightPriceScale: {
-        borderColor: '#222834',
-        scaleMargins: { top: 0.12, bottom: 0.15 },
-      },
-      timeScale: {
-        borderColor: '#222834',
-        timeVisible: true,
-        secondsVisible: false,
-      },
-    });
+    try {
+      // Create chart instance
+      const chart = createChart(chartContainerRef.current, {
+        layout: {
+          background: { type: ColorType.Solid, color: '#0B0E14' },
+          textColor: '#C9D1D9',
+          fontSize: 11,
+          fontFamily: 'JetBrains Mono, monospace',
+        },
+        grid: {
+          vertLines: { color: '#181E27', style: 1 },
+          horzLines: { color: '#181E27', style: 1 },
+        },
+        crosshair: {
+          mode: 1,
+          vertLine: { color: '#00F0FF', width: 1, style: 2 },
+          horzLine: { color: '#00F0FF', width: 1, style: 2 },
+        },
+        rightPriceScale: {
+          borderColor: '#222834',
+          scaleMargins: { top: 0.12, bottom: 0.15 },
+        },
+        timeScale: {
+          borderColor: '#222834',
+          timeVisible: true,
+          secondsVisible: false,
+        },
+      });
 
-    // Add Candlestick Series
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#00E676',
-      downColor: '#FF3B30',
-      borderVisible: false,
-      wickUpColor: '#00E676',
-      wickDownColor: '#FF3B30',
-    });
+      // Add Candlestick Series (Lightweight Charts v5 API)
+      const candlestickSeries = chart.addSeries(CandlestickSeries, {
+        upColor: '#00E676',
+        downColor: '#FF3B30',
+        borderVisible: false,
+        wickUpColor: '#00E676',
+        wickDownColor: '#FF3B30',
+      });
 
-    chartInstanceRef.current = chart;
-    candlestickSeriesRef.current = candlestickSeries;
+      chartInstanceRef.current = chart;
+      candlestickSeriesRef.current = candlestickSeries;
 
-    // Auto-resize observer
-    const resizeObserver = new ResizeObserver((entries) => {
-      if (entries[0] && chartInstanceRef.current) {
-        const { width, height } = entries[0].contentRect;
-        chartInstanceRef.current.applyOptions({ width, height });
-      }
-    });
-    resizeObserver.observe(chartContainerRef.current);
+      // Auto-resize observer
+      const resizeObserver = new ResizeObserver((entries) => {
+        if (entries[0] && chartInstanceRef.current) {
+          const { width, height } = entries[0].contentRect;
+          if (width > 0 && height > 0) {
+            chartInstanceRef.current.resize(width, height);
+          }
+        }
+      });
+      resizeObserver.observe(chartContainerRef.current);
 
-    return () => {
-      resizeObserver.disconnect();
-      chart.remove();
-    };
+      return () => {
+        resizeObserver.disconnect();
+        chart.remove();
+      };
+    } catch (err) {
+      console.error('Failed to initialize TradingView Lightweight Chart:', err);
+    }
   }, []);
 
   // Fetch candle data when symbol or timeframe changes

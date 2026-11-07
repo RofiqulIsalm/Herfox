@@ -309,3 +309,4 @@ The FastAPI server provides 10 clean REST endpoints and a high-speed WebSocket s
 
 ---
 > **The Life Terminal — Engineered for Systematic Alpha & Capital Protection.**
+

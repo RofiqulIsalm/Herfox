@@ -340,3 +340,4 @@ export default function EvolutionArena({ onBackToTerminal }) {
     </div>
   );
 }
+
